@@ -2,6 +2,8 @@
 #include <vector>
 #include <array>
 #include <cstdlib> //for using rand()
+#include <stdlib.h> // for cleaning console.
+#include <windows.h> // for sleep()
 
 constexpr int numberCountInCard{ 15 };
 
@@ -22,30 +24,60 @@ constexpr int columnCountCard{ 9 };
 constexpr int rowCountBingo{ 9 };
 constexpr int columnCountBingo{ 10 };
 
+constexpr int totalBingoNumbers{ 90 };
+
+bool gameStarted{ false };
 
 using basicCardType = std::array<int, numberCountInCard>;
 using advancedCardType = std::array <std::array<int, columnCountCard>, rowCountCard>;
+using bingoType = std::array <std::array<int, columnCountBingo>, rowCountBingo>;
 
-void createBingo()
+std::vector<advancedCardType> allPreparedCards{};
+
+bingoType createBingo()
 {
-	int bingoArr[rowCountBingo][columnCountBingo]{};
+	bingoType bingoArr{};
 	int counter{ 1 };
+
 	for (int i = 0; i < rowCountBingo; i++)
 	{
 		for (int j = 0; j < columnCountBingo; j++)
 		{
 			bingoArr[i][j] = counter;
+			++counter;
+		}
+	}
+	return bingoArr;
+}
+
+// bingoNumber set to 0 because it is optional. When the game started bingoNumber will come.
+void printBingo(bingoType bingoArr, int bingoNumber = 0)
+{
+	if (!gameStarted)
+		std::cout << "Bingo game is ready!" << '\n' << '\n';
+	else
+		std::cout << "Bingo number is: " << bingoNumber << '\n' << '\n';
+
+
+	for (int i = 0; i < rowCountBingo; i++)
+	{
+		for (int j = 0; j < columnCountBingo; j++)
+		{
+			if (gameStarted && bingoNumber != 0 && bingoArr[i][j] == bingoNumber)
+			{
+				bingoArr[i][j] = 0;
+			}
 
 			if (bingoArr[i][j] < 10)
 				std::cout << ' ' << bingoArr[i][j] << ' ';
 			else
 				std::cout << bingoArr[i][j] << ' ';
 
-			if (bingoArr[i][j] % 10 == 0)
+			// bingoArr[i][j] != 0 for update process.
+			if (j == columnCountBingo - 1)
 			{
 				std::cout << '\n';
 			}
-			++counter;
 		}
 	}
 	std::cout << '\n';
@@ -58,7 +90,6 @@ int howManyCards()
 	std::cin >> cardCount;
 	return cardCount;
 }
-
 
 int getIndexInVector(std::vector<int> numberVector, int startingValue)
 {
@@ -511,8 +542,6 @@ basicCardType createBasicCard()
 	return cardArr;
 }
 
-std::vector<advancedCardType> allPreparedCards{};
-
 void createCards(int cardCount)
 {
 	basicCardType cardArray{};
@@ -527,8 +556,6 @@ void createCards(int cardCount)
 		allPreparedCards.push_back(prepareCardsForBingo(cardArray));
 	}
 }
-
-
 
 void cardToConsole(const advancedCardType& card)
 {
@@ -556,24 +583,112 @@ void cardToConsole(const advancedCardType& card)
 
 void printCards(const std::vector<advancedCardType>& cards)
 {
-	for (auto& card : cards)
+	for (const advancedCardType& card : cards)
 	{
 		std::cout << '\n';
 		cardToConsole(card);
 	}
 }
 
+std::vector<int> createBingoDeck()
+{
+	std::vector<int> bingoNumbersVector{};
+
+	for (int i = 0; i < 90; i++)
+	{
+		bingoNumbersVector.push_back(i + 1);
+	}
+	return bingoNumbersVector;
+}
+
+// referans gonderince sayi azaliyor.
+int randomBingoNumberGenerator(std::vector<int>& bingoNumbersVector)
+{
+	int randomIndex{ static_cast<int>(rand() % bingoNumbersVector.size()) };
+	int randomNumber{ bingoNumbersVector[randomIndex] };
+
+	bingoNumbersVector.erase(bingoNumbersVector.begin() + randomIndex);
+	return randomNumber;
+}
+
+void updateBingo(bingoType& mainBingoArray ,int bingoNumber)
+{
+	for (int i = 0; i < rowCountBingo; i++)
+	{
+		for (int j = 0; j < columnCountBingo; j++)
+		{
+			if (mainBingoArray[i][j] == bingoNumber)
+			{
+				mainBingoArray[i][j] = 0;
+			}
+		}
+	}
+}
+
+void updateCards(std::vector<advancedCardType>& cards, int bingoNumber)
+{
+	// yeni sayi degistiginde (bingoNumber) cardlari update et.
+	// update edilen cardlari printCards() fonksiyonuna yolla.
+
+	for (auto& card : cards)
+	{
+		for (int i = 0; i < rowCountCard; i++)
+		{
+			for (int j = 0; j < columnCountCard; j++)
+			{
+				if (card[i][j] == bingoNumber)
+				{
+					card[i][j] = 0;
+				}
+			}
+		}
+	}
+}
+
+bool startGame() 
+{
+	std::cout << '\n' << "Do you want to start game?: type [y/n]: ";
+	char yesOrNo{};
+	std::cin >> yesOrNo;
+
+	if (yesOrNo == 'y') 
+	{
+		gameStarted = true;
+		return gameStarted;
+	}	
+	else
+	{
+		gameStarted = false;
+		return gameStarted;
+	}
+}
 
 int main() {
 
-	createBingo();
+	bingoType mainBingoArray = createBingo();
+	printBingo(mainBingoArray);
+
 	int cardCount{ howManyCards()};
 	createCards(cardCount);
-
 	printCards(allPreparedCards);
 
+	if (startGame())
+	{
+		std::vector<int> bingoNumbersVector{ createBingoDeck() };
+
+		int i = 1; // for control 
+		while (i < 50)
+		{
+			Sleep(400);
+			system("CLS");
+			int randomNumber = randomBingoNumberGenerator(bingoNumbersVector);
+			updateBingo(mainBingoArray, randomNumber);
+			printBingo(mainBingoArray, randomNumber);
+			updateCards(allPreparedCards,randomNumber);
+			printCards(allPreparedCards);
+			++i;
+		}
+	}
+
 }
-
-
-
 
