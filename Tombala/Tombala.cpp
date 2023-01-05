@@ -5,7 +5,6 @@
 #include <stdlib.h> // for cleaning console.
 #include <windows.h> // for sleep()
 
-
 namespace constants 
 {
 	constexpr int numberCountInCard{ 15 };
@@ -27,41 +26,36 @@ namespace constants
 	constexpr int rowCountBingo{ 9 };
 	constexpr int columnCountBingo{ 10 };
 
-	constexpr int totalBingoNumbers{ 90 };
+	constexpr int totalBingoDeckNumbers{ 90 };
 
 	constexpr int winnerCount{ 3 };
 }
 
-
-
-bool gameStarted{ false };
-
 using basicCardType = std::array<int, constants::numberCountInCard>;
 using advancedCardType = std::array <std::array<int, constants::columnCountCard>, constants::rowCountCard>;
-using bingoType = std::array <std::array<int, constants::columnCountBingo>, constants::rowCountBingo>;
+using bingoDeckType = std::array <std::array<int, constants::columnCountBingo>, constants::rowCountBingo>;
 using winnerType = std::array<int, constants::winnerCount>;
 
-
-
-bingoType createBingo()
+bingoDeckType createBingoDeck()
 {
-	bingoType bingoArr{};
-	int counter{ 1 };
+	bingoDeckType bingoDeckArr{};
 
+	int counter{ 1 };
 	for (int i = 0; i < constants::rowCountBingo; i++)
 	{
 		for (int j = 0; j < constants::columnCountBingo; j++)
 		{
-			bingoArr[i][j] = counter;
+			bingoDeckArr[i][j] = counter;
 			++counter;
 		}
 	}
-	return bingoArr;
+	return bingoDeckArr;
 }
 
-// bingoNumber set to 0 because it is optional. When the game started bingoNumber will come.
-void printBingo(bingoType bingoArr, int bingoNumber = 0)
+// bingoNumber = 0 and gameStarted = false because they are optional. When the game started bingoNumber will come.
+void printBingoDeck(bingoDeckType bingoDeck, int bingoNumber = 0, bool gameStarted = false)
 {
+	// when gameStarts first Console Line replace with random Number from bingoDeck.
 	if (!gameStarted)
 		std::cout << "Bingo game is ready!" << '\n' << '\n';
 	else
@@ -72,17 +66,17 @@ void printBingo(bingoType bingoArr, int bingoNumber = 0)
 	{
 		for (int j = 0; j < constants::columnCountBingo; j++)
 		{
-			if (gameStarted && bingoNumber != 0 && bingoArr[i][j] == bingoNumber)
+			// in gameplay stage, set value to 0 in bingoDeck which equals to bingoNumber.
+			if (gameStarted && bingoDeck[i][j] == bingoNumber)
 			{
-				bingoArr[i][j] = 0;
+				bingoDeck[i][j] = 0;
 			}
-
-			if (bingoArr[i][j] < 10)
-				std::cout << ' ' << bingoArr[i][j] << ' ';
+			// for aligning purpose 7 and 17 needs both 2 space in Console.
+			if (bingoDeck[i][j] < 10)
+				std::cout << ' ' << bingoDeck[i][j] << ' ';
 			else
-				std::cout << bingoArr[i][j] << ' ';
-
-			// bingoArr[i][j] != 0 for update process.
+				std::cout << bingoDeck[i][j] << ' ';
+			// column end go to next line.
 			if (j == constants::columnCountBingo - 1)
 			{
 				std::cout << '\n';
@@ -92,7 +86,7 @@ void printBingo(bingoType bingoArr, int bingoNumber = 0)
 	std::cout << '\n';
 }
 
-int howManyCards()
+int userInputGetCardCount()
 {
 	std::cout << "How many cards do you want: ";
 	int cardCount{};
@@ -100,7 +94,8 @@ int howManyCards()
 	return cardCount;
 }
 
-int getIndexInVector(std::vector<int> numberVector, int startingValue)
+// get an Index value from vector which equals to startingValue
+int getIndexValueFromVector(std::vector<int> numberVector, int startingValue)
 {
 	std::vector<int>::iterator it;
 	it = find(numberVector.begin(), numberVector.end(), startingValue);
@@ -108,99 +103,98 @@ int getIndexInVector(std::vector<int> numberVector, int startingValue)
 	return indexValue;
 }
 
-advancedCardType prepareCardsForBingo(basicCardType basicCard)
+advancedCardType createAdvancedCard(basicCardType basicCard)
 {
-	int indexCount{ 0 };
-
+	// because of every row needs to have 5 number. 
+	//modThreeCounter seperates numbers between 3 rows. [0, 1, 2]
+	int modThreeCounter{ 0 };
 	int counter{ 0 };
 
-	int modThreeCounter{ };
-
-	std::array <std::array<int, constants::columnCountCard>, constants::rowCountCard> preparedArray{};
-
+	advancedCardType advancedCard{};
+	// put numbers to columns and rows in advancedCard.
 	for (int i = 0; i < constants::numberCountInCard;i++)
 	{
 		modThreeCounter = counter % 3;
 
+		// if number is between 0 - 10
 		if (basicCard[i] / 10 == constants::divide1s)
 		{
-			preparedArray[modThreeCounter][constants::divide1s] = basicCard[i];
+			advancedCard[modThreeCounter][constants::divide1s] = basicCard[i];
 			++counter;
 		}
+		// if number is between 10 - 20
 		else if (basicCard[i] / 10 == constants::divide10s)
 		{
-			preparedArray[modThreeCounter][constants::divide10s] = basicCard[i];
+			advancedCard[modThreeCounter][constants::divide10s] = basicCard[i];
 			++counter;
 		}
 		else if (basicCard[i] / 10 == constants::divide20s)
 		{
-			preparedArray[modThreeCounter][constants::divide20s] = basicCard[i];
+			advancedCard[modThreeCounter][constants::divide20s] = basicCard[i];
 			++counter;
 		}
 		else if (basicCard[i] / 10 == constants::divide30s)
 		{
-			preparedArray[modThreeCounter][constants::divide30s] = basicCard[i];
+			advancedCard[modThreeCounter][constants::divide30s] = basicCard[i];
 			++counter;
 		}
 		else if (basicCard[i] / 10 == constants::divide40s)
 		{
-			preparedArray[modThreeCounter][constants::divide40s] = basicCard[i];
+			advancedCard[modThreeCounter][constants::divide40s] = basicCard[i];
 			++counter;
 		}
 		else if (basicCard[i] / 10 == constants::divide50s)
 		{
-			preparedArray[modThreeCounter][constants::divide50s] = basicCard[i];
+			advancedCard[modThreeCounter][constants::divide50s] = basicCard[i];
 			++counter;
 		}
 		else if (basicCard[i] / 10 == constants::divide60s)
 		{
-			preparedArray[modThreeCounter][constants::divide60s] = basicCard[i];
+			advancedCard[modThreeCounter][constants::divide60s] = basicCard[i];
 			++counter;
 		}
 		else if (basicCard[i] / 10 == constants::divide70s)
 		{
-			preparedArray[modThreeCounter][constants::divide70s] = basicCard[i];
+			advancedCard[modThreeCounter][constants::divide70s] = basicCard[i];
 			++counter;
 		}
 		else if (basicCard[i] / 10 == constants::divide80s || basicCard[i] / 10 == constants::divide90s)
 		{
-			preparedArray[modThreeCounter][constants::divide80s] = basicCard[i];
+			advancedCard[modThreeCounter][constants::divide80s] = basicCard[i];
 			++counter;
 		}
 	}
 
-	// order values in same column in descending order.
-
-	int howManyInColumn{ 0 };
-	int firstValueInColumn{};
-	int firstValueRowNumber{};
-	int secondValueInColumn{};
-
+	
+	int howManyNumberInSameColumn{ 0 };
+	int firstNumbersRowIndex{};
+	int firstNumberInSameColumn{};
+	int secondNumberInSameColumn{};
 	int tempInt{};
-
+	// ordering numbers in same column from top to bottom in ASC order.
 	for (int i = 0; i < constants::columnCountCard; i++)
 	{
-		howManyInColumn = 0;
+		howManyNumberInSameColumn = 0;
 
 		for (int j = 0; j < constants::rowCountCard; j++)
 		{
-			if (preparedArray[j][i] != 0)
+			if (advancedCard[j][i] != 0)
 			{
-				++howManyInColumn;
-				if (howManyInColumn == 1)
+				++howManyNumberInSameColumn;
+				if (howManyNumberInSameColumn == 1)
 				{
-					firstValueRowNumber = j;
-					firstValueInColumn = preparedArray[j][i];
+					firstNumbersRowIndex = j;
+					firstNumberInSameColumn = advancedCard[j][i];
 				}
-				else if (howManyInColumn == 2)
+				else if (howManyNumberInSameColumn == 2)
 				{
-					secondValueInColumn = preparedArray[j][i];
+					secondNumberInSameColumn = advancedCard[j][i];
 
-					if (firstValueInColumn > secondValueInColumn)
+					if (firstNumberInSameColumn > secondNumberInSameColumn)
 					{
-						tempInt = secondValueInColumn;
-						preparedArray[j][i] = firstValueInColumn;
-						preparedArray[firstValueRowNumber][i] = tempInt;
+						tempInt = secondNumberInSameColumn;
+						advancedCard[j][i] = firstNumberInSameColumn;
+						advancedCard[firstNumbersRowIndex][i] = tempInt;
 					}
 				}
 
@@ -208,9 +202,10 @@ advancedCardType prepareCardsForBingo(basicCardType basicCard)
 		}
 	}
 
-	return preparedArray;
+	return advancedCard;
 }
 
+// sorting numbers inside basicCard
 basicCardType sortBasicCardNumbers(basicCardType basicCard)
 {
 	int tempInt{};
@@ -230,48 +225,63 @@ basicCardType sortBasicCardNumbers(basicCardType basicCard)
 basicCardType createBasicCard()
 {
 
-	basicCardType cardArr{};
+	basicCardType basicCard{};
 
-	std::vector<int> allNumbersVector{};
-
-	for (int i = 0; i < 90; i++)
+	// creates a vector numbers from 1 to 90.
+	// type is vector because for example we need to delete 9 numbers inside vector from the middle.
+	std::vector<int> allNumbersInDeck{};
+	for (int i = 0; i < constants::totalBingoDeckNumbers; i++)
 	{
-		allNumbersVector.push_back(i + 1);
+		allNumbersInDeck.push_back(i + 1);
 	}
 
+	// checking if values from that column are deleted from deck
+	bool deleted_1s {};
+	bool deleted_10s{};
+	bool deleted_20s{};
+	bool deleted_30s{};
+	bool deleted_40s{};
+	bool deleted_50s{};
+	bool deleted_60s{};
+	bool deleted_70s{};
+	bool deleted_80s{};
+	// for checking how many numbers in that column
+	int control_1s  {};
+	int control_10s {};
+	int control_20s {};
+	int control_30s {};
+	int control_40s {};
+	int control_50s {};
+	int control_60s {};
+	int control_70s {};
+	int control_80s {};
+	bool twoOrMore{};
+	int startingNumber{};
+	int startingIndex{};
 
+	bool randomNumberAvailable{};
 	int randomNumber{};
-
-	bool deleted_1s{ 0 };
-	bool deleted_10s{ 0 };
-	bool deleted_20s{ 0 };
-	bool deleted_30s{ 0 };
-	bool deleted_40s{ 0 };
-	bool deleted_50s{ 0 };
-	bool deleted_60s{ 0 };
-	bool deleted_70s{ 0 };
-	bool deleted_80s{ 0 };
-
 
 	for (int i = 0; i < constants::numberCountInCard; i++)
 	{
-		bool twoOrMore{};
-		int control_1s{ 0 };
-		int control_10s{ 0 };
-		int control_20s{ 0 };
-		int control_30s{ 0 };
-		int control_40s{ 0 };
-		int control_50s{ 0 };
-		int control_60s{ 0 };
-		int control_70s{ 0 };
-		int control_80s{ 0 };
+		twoOrMore = false;
+		control_1s = 0;
+		control_10s = 0;
+		control_20s = 0;
+		control_30s = 0;
+		control_40s = 0;
+		control_50s = 0;
+		control_60s = 0;
+		control_70s = 0;
+		control_80s = 0;
 
-		// array'in butun degerleri kontrol edilecek.
-		// 2 den fazla ayni kolonda bulunan deger varsa o 10 deger vectorden cikartilacak.
+		// every column in advancedCard can have max 2 numbers.
+		// example : in 3rd column [21,27] is possible, [21,27,29] is not possible.
+		// if we have [21,27] we need to delete values from 20 - 29 from from deckNumbers
 		for (int j = 0; j < constants::numberCountInCard; j++)
 		{
 			//for values from 1 to 9
-			if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide1s)
+			if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide1s)
 			{
 
 				if (deleted_1s)
@@ -284,13 +294,13 @@ basicCardType createBasicCard()
 
 				if (twoOrMore == true)
 				{
-					int startingNumber{ 1 };
-					int startingIndex{ getIndexInVector(allNumbersVector,startingNumber) };
+					startingNumber = 1;
+					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
 					// from 1 to 9 there are 9 numbers.
 					for (int k = 8; k >= 0; k--)
 					{
-						allNumbersVector.erase(allNumbersVector.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
 					}
 
 					twoOrMore = false;
@@ -300,7 +310,7 @@ basicCardType createBasicCard()
 
 			}
 			//for values from 10 to 19
-			else if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide10s)
+			else if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide10s)
 			{
 
 				if (deleted_10s)
@@ -313,13 +323,13 @@ basicCardType createBasicCard()
 
 				if (twoOrMore == true)
 				{
-					int startingNumber{ 10 };
-					int startingIndex{ getIndexInVector(allNumbersVector,startingNumber) };
+					startingNumber = 10;
+					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
 					// from 10 to 19 there are 10 numbers.
 					for (int k = 9; k >= 0; k--)
 					{
-						allNumbersVector.erase(allNumbersVector.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
 					}
 
 					twoOrMore = false;
@@ -328,8 +338,7 @@ basicCardType createBasicCard()
 				}
 
 			}
-			//for values from 20 to 29
-			else if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide20s)
+			else if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide20s)
 			{
 
 				if (deleted_20s)
@@ -342,13 +351,13 @@ basicCardType createBasicCard()
 
 				if (twoOrMore == true)
 				{
-					int startingNumber{ 20 };
-					int startingIndex{ getIndexInVector(allNumbersVector,startingNumber) };
+					startingNumber = 20;
+					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber) ;
 
 					// from 20 to 29 there are 10 numbers.
 					for (int k = 9; k >= 0; k--)
 					{
-						allNumbersVector.erase(allNumbersVector.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
 					}
 
 					twoOrMore = false;
@@ -357,8 +366,7 @@ basicCardType createBasicCard()
 				}
 
 			}
-			//for values from 30 to 39
-			else if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide30s)
+			else if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide30s)
 			{
 				if (deleted_30s)
 					continue;
@@ -370,13 +378,13 @@ basicCardType createBasicCard()
 
 				if (twoOrMore == true)
 				{
-					int startingNumber{ 30 };
-					int startingIndex{ getIndexInVector(allNumbersVector,startingNumber) };
+					startingNumber = 30;
+					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
 					// from 30 to 39 there are 10 numbers.
 					for (int k = 9; k >= 0; k--)
 					{
-						allNumbersVector.erase(allNumbersVector.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
 					}
 
 					twoOrMore = false;
@@ -385,8 +393,7 @@ basicCardType createBasicCard()
 				}
 
 			}
-			//for values from 40 to 49
-			else if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide40s)
+			else if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide40s)
 			{
 
 				if (deleted_40s)
@@ -399,13 +406,13 @@ basicCardType createBasicCard()
 
 				if (twoOrMore == true)
 				{
-					int startingNumber{ 40 };
-					int startingIndex{ getIndexInVector(allNumbersVector,startingNumber) };
+					startingNumber = 40;
+					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
 					// from 40 to 49 there are 10 numbers.
 					for (int k = 9; k >= 0; k--)
 					{
-						allNumbersVector.erase(allNumbersVector.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
 					}
 
 					twoOrMore = false;
@@ -414,8 +421,7 @@ basicCardType createBasicCard()
 				}
 
 			}
-			//for values from 50 to 59
-			else if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide50s)
+			else if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide50s)
 			{
 
 				if (deleted_50s)
@@ -428,13 +434,13 @@ basicCardType createBasicCard()
 
 				if (twoOrMore == true)
 				{
-					int startingNumber{ 50 };
-					int startingIndex{ getIndexInVector(allNumbersVector,startingNumber) };
+					startingNumber = 50;
+					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
 					// from 50 to 59 there are 10 numbers.
 					for (int k = 9; k >= 0; k--)
 					{
-						allNumbersVector.erase(allNumbersVector.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
 					}
 
 					twoOrMore = false;
@@ -443,8 +449,7 @@ basicCardType createBasicCard()
 				}
 
 			}
-			//for values from 60 to 69
-			else if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide60s)
+			else if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide60s)
 			{
 				if (deleted_60s)
 					continue;
@@ -456,13 +461,13 @@ basicCardType createBasicCard()
 
 				if (twoOrMore == true)
 				{
-					int startingNumber{ 60 };
-					int startingIndex{ getIndexInVector(allNumbersVector,startingNumber) };
+					startingNumber = 60;
+					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
 					// from 60 to 69 there are 10 numbers.
 					for (int k = 9; k >= 0; k--)
 					{
-						allNumbersVector.erase(allNumbersVector.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
 					}
 
 					twoOrMore = false;
@@ -471,8 +476,7 @@ basicCardType createBasicCard()
 				}
 
 			}
-			//for values from 70 to 79
-			else if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide70s)
+			else if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide70s)
 			{
 
 				if (deleted_70s)
@@ -485,13 +489,13 @@ basicCardType createBasicCard()
 
 				if (twoOrMore == true)
 				{
-					int startingNumber{ 70 };
-					int startingIndex{ getIndexInVector(allNumbersVector,startingNumber) };
+					startingNumber = 70;
+					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
 					// from 70 to 79 there are 10 numbers.
 					for (int k = 9; k >= 0; k--)
 					{
-						allNumbersVector.erase(allNumbersVector.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
 					}
 
 					twoOrMore = false;
@@ -500,8 +504,7 @@ basicCardType createBasicCard()
 				}
 
 			}
-			//for values from 80 to 90
-			else if (cardArr[j] != 0 && (cardArr[j] / 10 == constants::divide80s || cardArr[j] / 10 == constants::divide90s))
+			else if (basicCard[j] != 0 && (basicCard[j] / 10 == constants::divide80s || basicCard[j] / 10 == constants::divide90s))
 			{
 				if (deleted_80s)
 					continue;
@@ -513,13 +516,13 @@ basicCardType createBasicCard()
 
 				if (twoOrMore == true)
 				{
-					int startingNumber{ 80 };
-					int startingIndex{ getIndexInVector(allNumbersVector,startingNumber) };
+					startingNumber = 80 ;
+					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
-					// from 80 to 90 there are 10 numbers.
+					// from 80 to 90 there are 11 numbers.
 					for (int k = 10; k >= 0; k--)
 					{
-						allNumbersVector.erase(allNumbersVector.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
 					}
 
 					twoOrMore = false;
@@ -531,42 +534,40 @@ basicCardType createBasicCard()
 		}
 
 
-		bool randomNumberAvailable{ false };
+		// this part sets card numbers one by one.
+		randomNumberAvailable = false;
 
 		while (!randomNumberAvailable)
 		{
 			randomNumberAvailable = true;
-			randomNumber = rand() % allNumbersVector.size();
+			randomNumber = rand() % allNumbersInDeck.size();
 
-			for (int i = 0; i < constants::numberCountInCard; i++)
+			for (int k = 0; k < constants::numberCountInCard; k++)
 			{
-				if (cardArr[i] != 0 && cardArr[i] == allNumbersVector[randomNumber])
+				if (basicCard[k] != 0 && basicCard[k] == allNumbersInDeck[randomNumber])
 					randomNumberAvailable = false;
 			}
 
 			if (randomNumberAvailable)
-				cardArr[i] = allNumbersVector[randomNumber];
+				basicCard[i] = allNumbersInDeck[randomNumber];
 		}
 	}
-	return cardArr;
+	return basicCard;
 }
 
-void createCards(int cardCount, std::vector<advancedCardType>& allCards)
+void createAdvancedCardStorage(int cardCount, std::vector<advancedCardType>& allCardsStorage)
 {
-	basicCardType cardArray{};
-	advancedCardType preparedCardArray{};
-
-	
-	allCards.reserve(cardCount);
+	basicCardType basicCard{};
+	allCardsStorage.reserve(cardCount);
 
 	for (int i = 0;i < cardCount; i++)
 	{
-		cardArray = sortBasicCardNumbers(createBasicCard());
-		allCards.push_back(prepareCardsForBingo(cardArray));
+		basicCard = sortBasicCardNumbers(createBasicCard());
+		allCardsStorage.push_back(createAdvancedCard(basicCard));
 	}
 }
 
-void cardToConsole(const advancedCardType& card)
+void printCardToConsole(const advancedCardType& card)
 {
 	for (int i = 0; i < constants::rowCountCard; i++)
 	{
@@ -595,22 +596,21 @@ void printCards(const std::vector<advancedCardType>& cards)
 	for (const advancedCardType& card : cards)
 	{
 		std::cout << '\n';
-		cardToConsole(card);
+		printCardToConsole(card);
 	}
 }
 
-std::vector<int> createBingoDeck()
+std::vector<int> createBingoNumbersVector()
 {
 	std::vector<int> bingoNumbersVector{};
 
-	for (int i = 0; i < 90; i++)
+	for (int i = 0; i < constants::totalBingoDeckNumbers; i++)
 	{
 		bingoNumbersVector.push_back(i + 1);
 	}
 	return bingoNumbersVector;
 }
 
-// referans gonderince sayi azaliyor.
 int randomBingoNumberGenerator(std::vector<int>& bingoNumbersVector)
 {
 	int randomIndex{ static_cast<int>(rand() % bingoNumbersVector.size()) };
@@ -620,15 +620,15 @@ int randomBingoNumberGenerator(std::vector<int>& bingoNumbersVector)
 	return randomNumber;
 }
 
-void updateBingo(bingoType& mainBingoArray ,int bingoNumber)
+void updateBingoDeck(bingoDeckType& mainBingoDeck ,int bingoNumber)
 {
 	for (int i = 0; i < constants::rowCountBingo; i++)
 	{
 		for (int j = 0; j < constants::columnCountBingo; j++)
 		{
-			if (mainBingoArray[i][j] == bingoNumber)
+			if (mainBingoDeck[i][j] == bingoNumber)
 			{
-				mainBingoArray[i][j] = 0;
+				mainBingoDeck[i][j] = 0;
 			}
 		}
 	}
@@ -636,8 +636,6 @@ void updateBingo(bingoType& mainBingoArray ,int bingoNumber)
 
 void updateCards(std::vector<advancedCardType>& cards, int bingoNumber)
 {
-	// yeni sayi degistiginde (bingoNumber) cardlari update et.
-	// update edilen cardlari printCards() fonksiyonuna yolla.
 
 	for (auto& card : cards)
 	{
@@ -654,7 +652,7 @@ void updateCards(std::vector<advancedCardType>& cards, int bingoNumber)
 	}
 }
 
-bool startGame() 
+bool startGame(bool& gameStarted)
 {
 	std::cout << '\n' << "Do you want to start game?: type [y/n]: ";
 	char yesOrNo{};
@@ -713,41 +711,46 @@ winnerType controlWinners(std::vector<advancedCardType>& updatedCards, winnerTyp
 
 void printWinners(const winnerType& winners)
 {
+	std::cout << '\n';
+
 	if (winners[0] != 0)
-		std::cout << winners[0] << " card wins 1. cinko." << '\n';
+		std::cout << "Card " << winners[0] << " wins 1st cinko.\n";
 	if (winners[1] != 0)
-		std::cout << winners[1] << " card wins 2. cinko." << '\n';
+		std::cout << "Card " << winners[1] << " wins 2nd cinko.\n";
 	if (winners[2] != 0)
-		std::cout << winners[2] << " card wins Tombala. Congratulations" << '\n';
+		std::cout << "Card " << winners[2] << " wins Tombala. Congratulations\n";
 }
 
 int main() {
 
-	//beginning of the game
-	bingoType mainBingoArray = createBingo();
-	printBingo(mainBingoArray);
+	srand(time(0)); // seed for rand() function.
 
-	int cardCount{ howManyCards()};
+	//beginning of the game
+	bingoDeckType mainBingoDeck = createBingoDeck();
+	printBingoDeck(mainBingoDeck);
+
+	int cardCount{ userInputGetCardCount()};
 
 	std::vector<advancedCardType> allCards{};
-	createCards(cardCount, allCards);
+	createAdvancedCardStorage(cardCount, allCards);
 	printCards(allCards);
 
-
-	// gameplay
-	if (startGame())
+	// game starts
+	bool gameStarted{ false };
+	if (startGame(gameStarted))
 	{
-		std::vector<int> bingoNumbersVector{ createBingoDeck() };
+		std::vector<int> bingoNumbersVector = createBingoNumbersVector();
 		winnerType winnersArray{};
 		
+		// winnersArray[0] 1st Cinko, winnersArray[1] 2nd Cinko, winnersArray[2] is Tombala
 		while (winnersArray[2] == 0)
 		{
-			Sleep(400);
+			Sleep(250);
 			system("CLS");
 			int randomNumber = randomBingoNumberGenerator(bingoNumbersVector);
-			updateBingo(mainBingoArray, randomNumber);
-			printBingo(mainBingoArray, randomNumber);
-			updateCards(allCards,randomNumber);
+			updateBingoDeck(mainBingoDeck, randomNumber);
+			printBingoDeck(mainBingoDeck, randomNumber, gameStarted);
+			updateCards(allCards, randomNumber);
 			printCards(allCards);
 			printWinners(controlWinners(allCards, winnersArray));
 		}
