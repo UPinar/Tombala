@@ -5,43 +5,52 @@
 #include <stdlib.h> // for cleaning console.
 #include <windows.h> // for sleep()
 
-constexpr int numberCountInCard{ 15 };
 
-constexpr int divide1s{ 0 };
-constexpr int divide10s{ 1 };
-constexpr int divide20s{ 2 };
-constexpr int divide30s{ 3 };
-constexpr int divide40s{ 4 };
-constexpr int divide50s{ 5 };
-constexpr int divide60s{ 6 };
-constexpr int divide70s{ 7 };
-constexpr int divide80s{ 8 };
-constexpr int divide90s{ 9 };
+namespace constants 
+{
+	constexpr int numberCountInCard{ 15 };
 
-constexpr int rowCountCard{ 3 };
-constexpr int columnCountCard{ 9 };
+	constexpr int divide1s{ 0 };
+	constexpr int divide10s{ 1 };
+	constexpr int divide20s{ 2 };
+	constexpr int divide30s{ 3 };
+	constexpr int divide40s{ 4 };
+	constexpr int divide50s{ 5 };
+	constexpr int divide60s{ 6 };
+	constexpr int divide70s{ 7 };
+	constexpr int divide80s{ 8 };
+	constexpr int divide90s{ 9 };
 
-constexpr int rowCountBingo{ 9 };
-constexpr int columnCountBingo{ 10 };
+	constexpr int rowCountCard{ 3 };
+	constexpr int columnCountCard{ 9 };
 
-constexpr int totalBingoNumbers{ 90 };
+	constexpr int rowCountBingo{ 9 };
+	constexpr int columnCountBingo{ 10 };
+
+	constexpr int totalBingoNumbers{ 90 };
+
+	constexpr int winnerCount{ 3 };
+}
+
+
 
 bool gameStarted{ false };
 
-using basicCardType = std::array<int, numberCountInCard>;
-using advancedCardType = std::array <std::array<int, columnCountCard>, rowCountCard>;
-using bingoType = std::array <std::array<int, columnCountBingo>, rowCountBingo>;
+using basicCardType = std::array<int, constants::numberCountInCard>;
+using advancedCardType = std::array <std::array<int, constants::columnCountCard>, constants::rowCountCard>;
+using bingoType = std::array <std::array<int, constants::columnCountBingo>, constants::rowCountBingo>;
+using winnerType = std::array<int, constants::winnerCount>;
 
-std::vector<advancedCardType> allPreparedCards{};
+
 
 bingoType createBingo()
 {
 	bingoType bingoArr{};
 	int counter{ 1 };
 
-	for (int i = 0; i < rowCountBingo; i++)
+	for (int i = 0; i < constants::rowCountBingo; i++)
 	{
-		for (int j = 0; j < columnCountBingo; j++)
+		for (int j = 0; j < constants::columnCountBingo; j++)
 		{
 			bingoArr[i][j] = counter;
 			++counter;
@@ -59,9 +68,9 @@ void printBingo(bingoType bingoArr, int bingoNumber = 0)
 		std::cout << "Bingo number is: " << bingoNumber << '\n' << '\n';
 
 
-	for (int i = 0; i < rowCountBingo; i++)
+	for (int i = 0; i < constants::rowCountBingo; i++)
 	{
-		for (int j = 0; j < columnCountBingo; j++)
+		for (int j = 0; j < constants::columnCountBingo; j++)
 		{
 			if (gameStarted && bingoNumber != 0 && bingoArr[i][j] == bingoNumber)
 			{
@@ -74,7 +83,7 @@ void printBingo(bingoType bingoArr, int bingoNumber = 0)
 				std::cout << bingoArr[i][j] << ' ';
 
 			// bingoArr[i][j] != 0 for update process.
-			if (j == columnCountBingo - 1)
+			if (j == constants::columnCountBingo - 1)
 			{
 				std::cout << '\n';
 			}
@@ -107,55 +116,55 @@ advancedCardType prepareCardsForBingo(basicCardType basicCard)
 
 	int modThreeCounter{ };
 
-	std::array <std::array<int, columnCountCard>, rowCountCard> preparedArray{};
+	std::array <std::array<int, constants::columnCountCard>, constants::rowCountCard> preparedArray{};
 
-	for (int i = 0; i < numberCountInCard;i++)
+	for (int i = 0; i < constants::numberCountInCard;i++)
 	{
 		modThreeCounter = counter % 3;
 
-		if (basicCard[i] / 10 == divide1s)
+		if (basicCard[i] / 10 == constants::divide1s)
 		{
-			preparedArray[modThreeCounter][divide1s] = basicCard[i];
+			preparedArray[modThreeCounter][constants::divide1s] = basicCard[i];
 			++counter;
 		}
-		else if (basicCard[i] / 10 == divide10s)
+		else if (basicCard[i] / 10 == constants::divide10s)
 		{
-			preparedArray[modThreeCounter][divide10s] = basicCard[i];
+			preparedArray[modThreeCounter][constants::divide10s] = basicCard[i];
 			++counter;
 		}
-		else if (basicCard[i] / 10 == divide20s)
+		else if (basicCard[i] / 10 == constants::divide20s)
 		{
-			preparedArray[modThreeCounter][divide20s] = basicCard[i];
+			preparedArray[modThreeCounter][constants::divide20s] = basicCard[i];
 			++counter;
 		}
-		else if (basicCard[i] / 10 == divide30s)
+		else if (basicCard[i] / 10 == constants::divide30s)
 		{
-			preparedArray[modThreeCounter][divide30s] = basicCard[i];
+			preparedArray[modThreeCounter][constants::divide30s] = basicCard[i];
 			++counter;
 		}
-		else if (basicCard[i] / 10 == divide40s)
+		else if (basicCard[i] / 10 == constants::divide40s)
 		{
-			preparedArray[modThreeCounter][divide40s] = basicCard[i];
+			preparedArray[modThreeCounter][constants::divide40s] = basicCard[i];
 			++counter;
 		}
-		else if (basicCard[i] / 10 == divide50s)
+		else if (basicCard[i] / 10 == constants::divide50s)
 		{
-			preparedArray[modThreeCounter][divide50s] = basicCard[i];
+			preparedArray[modThreeCounter][constants::divide50s] = basicCard[i];
 			++counter;
 		}
-		else if (basicCard[i] / 10 == divide60s)
+		else if (basicCard[i] / 10 == constants::divide60s)
 		{
-			preparedArray[modThreeCounter][divide60s] = basicCard[i];
+			preparedArray[modThreeCounter][constants::divide60s] = basicCard[i];
 			++counter;
 		}
-		else if (basicCard[i] / 10 == divide70s)
+		else if (basicCard[i] / 10 == constants::divide70s)
 		{
-			preparedArray[modThreeCounter][divide70s] = basicCard[i];
+			preparedArray[modThreeCounter][constants::divide70s] = basicCard[i];
 			++counter;
 		}
-		else if (basicCard[i] / 10 == divide80s || basicCard[i] / 10 == divide90s)
+		else if (basicCard[i] / 10 == constants::divide80s || basicCard[i] / 10 == constants::divide90s)
 		{
-			preparedArray[modThreeCounter][divide80s] = basicCard[i];
+			preparedArray[modThreeCounter][constants::divide80s] = basicCard[i];
 			++counter;
 		}
 	}
@@ -169,11 +178,11 @@ advancedCardType prepareCardsForBingo(basicCardType basicCard)
 
 	int tempInt{};
 
-	for (int i = 0; i < columnCountCard; i++)
+	for (int i = 0; i < constants::columnCountCard; i++)
 	{
 		howManyInColumn = 0;
 
-		for (int j = 0; j < rowCountCard; j++)
+		for (int j = 0; j < constants::rowCountCard; j++)
 		{
 			if (preparedArray[j][i] != 0)
 			{
@@ -205,8 +214,8 @@ advancedCardType prepareCardsForBingo(basicCardType basicCard)
 basicCardType sortBasicCardNumbers(basicCardType basicCard)
 {
 	int tempInt{};
-	for (int i = 0; i < numberCountInCard - 1; i++) {
-		for (int j = i + 1; j < numberCountInCard; j++) {
+	for (int i = 0; i < constants::numberCountInCard - 1; i++) {
+		for (int j = i + 1; j < constants::numberCountInCard; j++) {
 			if (basicCard[i] > basicCard[j]) {
 				//swapping with smallest element of array.
 				tempInt = basicCard[j];
@@ -244,7 +253,7 @@ basicCardType createBasicCard()
 	bool deleted_80s{ 0 };
 
 
-	for (int i = 0; i < numberCountInCard; i++)
+	for (int i = 0; i < constants::numberCountInCard; i++)
 	{
 		bool twoOrMore{};
 		int control_1s{ 0 };
@@ -259,10 +268,10 @@ basicCardType createBasicCard()
 
 		// array'in butun degerleri kontrol edilecek.
 		// 2 den fazla ayni kolonda bulunan deger varsa o 10 deger vectorden cikartilacak.
-		for (int j = 0; j < numberCountInCard; j++)
+		for (int j = 0; j < constants::numberCountInCard; j++)
 		{
 			//for values from 1 to 9
-			if (cardArr[j] != 0 && cardArr[j] / 10 == divide1s)
+			if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide1s)
 			{
 
 				if (deleted_1s)
@@ -291,7 +300,7 @@ basicCardType createBasicCard()
 
 			}
 			//for values from 10 to 19
-			else if (cardArr[j] != 0 && cardArr[j] / 10 == divide10s)
+			else if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide10s)
 			{
 
 				if (deleted_10s)
@@ -320,7 +329,7 @@ basicCardType createBasicCard()
 
 			}
 			//for values from 20 to 29
-			else if (cardArr[j] != 0 && cardArr[j] / 10 == divide20s)
+			else if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide20s)
 			{
 
 				if (deleted_20s)
@@ -349,7 +358,7 @@ basicCardType createBasicCard()
 
 			}
 			//for values from 30 to 39
-			else if (cardArr[j] != 0 && cardArr[j] / 10 == divide30s)
+			else if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide30s)
 			{
 				if (deleted_30s)
 					continue;
@@ -377,7 +386,7 @@ basicCardType createBasicCard()
 
 			}
 			//for values from 40 to 49
-			else if (cardArr[j] != 0 && cardArr[j] / 10 == divide40s)
+			else if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide40s)
 			{
 
 				if (deleted_40s)
@@ -406,7 +415,7 @@ basicCardType createBasicCard()
 
 			}
 			//for values from 50 to 59
-			else if (cardArr[j] != 0 && cardArr[j] / 10 == divide50s)
+			else if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide50s)
 			{
 
 				if (deleted_50s)
@@ -435,7 +444,7 @@ basicCardType createBasicCard()
 
 			}
 			//for values from 60 to 69
-			else if (cardArr[j] != 0 && cardArr[j] / 10 == divide60s)
+			else if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide60s)
 			{
 				if (deleted_60s)
 					continue;
@@ -463,7 +472,7 @@ basicCardType createBasicCard()
 
 			}
 			//for values from 70 to 79
-			else if (cardArr[j] != 0 && cardArr[j] / 10 == divide70s)
+			else if (cardArr[j] != 0 && cardArr[j] / 10 == constants::divide70s)
 			{
 
 				if (deleted_70s)
@@ -492,7 +501,7 @@ basicCardType createBasicCard()
 
 			}
 			//for values from 80 to 90
-			else if (cardArr[j] != 0 && (cardArr[j] / 10 == divide80s || cardArr[j] / 10 == divide90s))
+			else if (cardArr[j] != 0 && (cardArr[j] / 10 == constants::divide80s || cardArr[j] / 10 == constants::divide90s))
 			{
 				if (deleted_80s)
 					continue;
@@ -529,7 +538,7 @@ basicCardType createBasicCard()
 			randomNumberAvailable = true;
 			randomNumber = rand() % allNumbersVector.size();
 
-			for (int i = 0; i < numberCountInCard; i++)
+			for (int i = 0; i < constants::numberCountInCard; i++)
 			{
 				if (cardArr[i] != 0 && cardArr[i] == allNumbersVector[randomNumber])
 					randomNumberAvailable = false;
@@ -542,28 +551,28 @@ basicCardType createBasicCard()
 	return cardArr;
 }
 
-void createCards(int cardCount)
+void createCards(int cardCount, std::vector<advancedCardType>& allCards)
 {
 	basicCardType cardArray{};
 	advancedCardType preparedCardArray{};
 
 	
-	allPreparedCards.reserve(cardCount);
+	allCards.reserve(cardCount);
 
 	for (int i = 0;i < cardCount; i++)
 	{
 		cardArray = sortBasicCardNumbers(createBasicCard());
-		allPreparedCards.push_back(prepareCardsForBingo(cardArray));
+		allCards.push_back(prepareCardsForBingo(cardArray));
 	}
 }
 
 void cardToConsole(const advancedCardType& card)
 {
-	for (int i = 0; i < rowCountCard; i++)
+	for (int i = 0; i < constants::rowCountCard; i++)
 	{
-		for (int j = 0; j < columnCountCard; j++)
+		for (int j = 0; j < constants::columnCountCard; j++)
 		{
-			if (card[i][j] / 10 == divide1s && card[i][j] != 0)
+			if (card[i][j] / 10 == constants::divide1s && card[i][j] != 0)
 			{
 				std::cout << ' ' << card[i][j] << " |";
 			}
@@ -613,9 +622,9 @@ int randomBingoNumberGenerator(std::vector<int>& bingoNumbersVector)
 
 void updateBingo(bingoType& mainBingoArray ,int bingoNumber)
 {
-	for (int i = 0; i < rowCountBingo; i++)
+	for (int i = 0; i < constants::rowCountBingo; i++)
 	{
-		for (int j = 0; j < columnCountBingo; j++)
+		for (int j = 0; j < constants::columnCountBingo; j++)
 		{
 			if (mainBingoArray[i][j] == bingoNumber)
 			{
@@ -632,9 +641,9 @@ void updateCards(std::vector<advancedCardType>& cards, int bingoNumber)
 
 	for (auto& card : cards)
 	{
-		for (int i = 0; i < rowCountCard; i++)
+		for (int i = 0; i < constants::rowCountCard; i++)
 		{
-			for (int j = 0; j < columnCountCard; j++)
+			for (int j = 0; j < constants::columnCountCard; j++)
 			{
 				if (card[i][j] == bingoNumber)
 				{
@@ -663,30 +672,84 @@ bool startGame()
 	}
 }
 
+winnerType controlWinners(std::vector<advancedCardType>& updatedCards, winnerType& winners)
+{
+
+	int winnerRowCounter = 0;
+	int totalZerosInColumn = 0;
+
+	for (int c = 0; c < updatedCards.size(); c++)
+	{
+		winnerRowCounter = 0;
+		for (int i = 0; i < constants::rowCountCard; i++)
+		{
+			totalZerosInColumn = 0;
+			for (int j = 0; j < constants::columnCountCard; j++)
+			{
+				if (updatedCards[c][i][j] == 0) 
+					++totalZerosInColumn;
+
+				if (totalZerosInColumn == constants::columnCountCard)
+					++winnerRowCounter;
+
+				// winner of 1st cinko.
+				if (totalZerosInColumn == constants::columnCountCard && winners[0] == 0)
+					winners[0] = c + 1; // if c = 0, 1st card wins 1st cinko.
+
+				// winner of 2nd cinko
+				if (totalZerosInColumn == constants::columnCountCard && winnerRowCounter == 2 && winners[1] == 0)
+					winners[1] = c + 1; // if c = 0, 1st card wins 2st cinko.
+				
+				// winner of Tombala
+				if (totalZerosInColumn == constants::columnCountCard && winnerRowCounter == 3)
+					winners[2] = c + 1; // if c = 0, 1st card wins tombala.
+				
+			}
+		}
+	}
+
+	return winners;
+}
+
+void printWinners(const winnerType& winners)
+{
+	if (winners[0] != 0)
+		std::cout << winners[0] << " card wins 1. cinko." << '\n';
+	if (winners[1] != 0)
+		std::cout << winners[1] << " card wins 2. cinko." << '\n';
+	if (winners[2] != 0)
+		std::cout << winners[2] << " card wins Tombala. Congratulations" << '\n';
+}
+
 int main() {
 
+	//beginning of the game
 	bingoType mainBingoArray = createBingo();
 	printBingo(mainBingoArray);
 
 	int cardCount{ howManyCards()};
-	createCards(cardCount);
-	printCards(allPreparedCards);
 
+	std::vector<advancedCardType> allCards{};
+	createCards(cardCount, allCards);
+	printCards(allCards);
+
+
+	// gameplay
 	if (startGame())
 	{
 		std::vector<int> bingoNumbersVector{ createBingoDeck() };
-
-		int i = 1; // for control 
-		while (i < 50)
+		winnerType winnersArray{};
+		
+		while (winnersArray[2] == 0)
 		{
 			Sleep(400);
 			system("CLS");
 			int randomNumber = randomBingoNumberGenerator(bingoNumbersVector);
 			updateBingo(mainBingoArray, randomNumber);
 			printBingo(mainBingoArray, randomNumber);
-			updateCards(allPreparedCards,randomNumber);
-			printCards(allPreparedCards);
-			++i;
+			updateCards(allCards,randomNumber);
+			printCards(allCards);
+			printWinners(controlWinners(allCards, winnersArray));
 		}
 	}
 
