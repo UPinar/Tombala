@@ -94,13 +94,27 @@ int userInputGetCardCount()
 	return cardCount;
 }
 
-// get an Index value from vector which equals to startingValue
-int getIndexValueFromVector(std::vector<int> numberVector, int startingValue)
+// get an Index value from vector which equals to startingNumber
+int getIndexValueFromVector(std::vector<int> numberVector, int startingNumber)
 {
+
+	for (int i = 0; i < numberVector.size(); i++)
+	{
+		if (numberVector[i] == startingNumber)
+			return i;
+	}
+	/*
 	std::vector<int>::iterator it;
-	it = find(numberVector.begin(), numberVector.end(), startingValue);
+	it = std::find(numberVector.begin(), numberVector.end(), startingNumber);
+	return static_cast<int>(it - numberVector.begin());
+	
+	//OR 
+
+	std::vector<int>::iterator it;
+	it = std::find(numberVector.begin(), numberVector.end(), startingNumber);
 	int indexValue{ static_cast<int>(std::distance(numberVector.begin(), it)) };
 	return indexValue;
+	*/
 }
 
 advancedCardType createAdvancedCard(basicCardType basicCard)
@@ -230,6 +244,7 @@ basicCardType createBasicCard()
 	// creates a vector numbers from 1 to 90.
 	// type is vector because for example we need to delete 9 numbers inside vector from the middle.
 	std::vector<int> allNumbersInDeck{};
+	allNumbersInDeck.reserve(constants::totalBingoDeckNumbers);
 	for (int i = 0; i < constants::totalBingoDeckNumbers; i++)
 	{
 		allNumbersInDeck.push_back(i + 1);
@@ -297,10 +312,11 @@ basicCardType createBasicCard()
 					startingNumber = 1;
 					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
+				
 					// from 1 to 9 there are 9 numbers.
-					for (int k = 8; k >= 0; k--)
+					for (int k = 0; k < 9; k++)
 					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
 					}
 
 					twoOrMore = false;
@@ -327,9 +343,9 @@ basicCardType createBasicCard()
 					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
 					// from 10 to 19 there are 10 numbers.
-					for (int k = 9; k >= 0; k--)
+					for (int k = 0; k < 10; k++)
 					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
 					}
 
 					twoOrMore = false;
@@ -355,9 +371,9 @@ basicCardType createBasicCard()
 					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber) ;
 
 					// from 20 to 29 there are 10 numbers.
-					for (int k = 9; k >= 0; k--)
+					for (int k = 0; k < 10; k++)
 					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
 					}
 
 					twoOrMore = false;
@@ -382,9 +398,9 @@ basicCardType createBasicCard()
 					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
 					// from 30 to 39 there are 10 numbers.
-					for (int k = 9; k >= 0; k--)
+					for (int k = 0; k < 10; k++)
 					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
 					}
 
 					twoOrMore = false;
@@ -410,9 +426,9 @@ basicCardType createBasicCard()
 					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
 					// from 40 to 49 there are 10 numbers.
-					for (int k = 9; k >= 0; k--)
+					for (int k = 0; k < 10; k++)
 					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
 					}
 
 					twoOrMore = false;
@@ -438,9 +454,9 @@ basicCardType createBasicCard()
 					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
 					// from 50 to 59 there are 10 numbers.
-					for (int k = 9; k >= 0; k--)
+					for (int k = 0; k < 10; k++)
 					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
 					}
 
 					twoOrMore = false;
@@ -465,9 +481,9 @@ basicCardType createBasicCard()
 					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
 					// from 60 to 69 there are 10 numbers.
-					for (int k = 9; k >= 0; k--)
+					for (int k = 0; k < 10; k++)
 					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
 					}
 
 					twoOrMore = false;
@@ -493,9 +509,9 @@ basicCardType createBasicCard()
 					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
 					// from 70 to 79 there are 10 numbers.
-					for (int k = 9; k >= 0; k--)
+					for (int k = 0; k < 10; k++)
 					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
 					}
 
 					twoOrMore = false;
@@ -520,9 +536,9 @@ basicCardType createBasicCard()
 					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
 
 					// from 80 to 90 there are 11 numbers.
-					for (int k = 10; k >= 0; k--)
+					for (int k = 0; k < 11; k++)
 					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex + k);
+						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
 					}
 
 					twoOrMore = false;
@@ -741,9 +757,9 @@ int main() {
 	{
 		std::vector<int> bingoNumbersVector = createBingoNumbersVector();
 		winnerType winnersArray{};
+		bool isThereAnyWinner{false};
 		
-		// winnersArray[0] 1st Cinko, winnersArray[1] 2nd Cinko, winnersArray[2] is Tombala
-		while (winnersArray[2] == 0)
+		while (!isThereAnyWinner)
 		{
 			Sleep(250);
 			system("CLS");
@@ -753,8 +769,12 @@ int main() {
 			updateCards(allCards, randomNumber);
 			printCards(allCards);
 			printWinners(controlWinners(allCards, winnersArray));
+
+			// winnersArray[0] 1st Cinko, winnersArray[1] 2nd Cinko, winnersArray[2] is Tombala
+			if (winnersArray[2] != 0)
+				isThereAnyWinner = true;
 		}
 	}
-
+	return 0;
 }
 
