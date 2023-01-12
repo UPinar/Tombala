@@ -5,6 +5,7 @@
 #include <stdlib.h> // for cleaning console.
 #include <windows.h> // for sleep()
 
+
 namespace constants 
 {
 	constexpr int numberCountInCard{ 15 };
@@ -102,6 +103,8 @@ int getIndexValueFromVector(std::vector<int> numberVector, int startingNumber)
 	{
 		if (numberVector[i] == startingNumber)
 			return i;
+		else
+			continue;
 	}
 	/*
 	std::vector<int>::iterator it;
@@ -236,6 +239,22 @@ basicCardType sortBasicCardNumbers(basicCardType basicCard)
 	return basicCard;
 }
 
+
+class controlNumbersInColumn
+{
+public:
+	bool isDeleted = false;
+	int howManyNumberPickedInColumn = 0;
+	std::vector<int> valueWhenDividedTen{};
+	int startingNumber {};
+	int startingIndex {};
+	bool twoOrMore = false;
+	bool isFirstColumn = false;
+	bool isLastColumn = false;
+	std::vector<int> valuesInColumn{};
+	int howManyWillDeleteFromDeck{};
+};
+
 basicCardType createBasicCard()
 {
 
@@ -250,324 +269,114 @@ basicCardType createBasicCard()
 		allNumbersInDeck.push_back(i + 1);
 	}
 
-	// checking if values from that column are deleted from deck
-	bool deleted_1s {};
-	bool deleted_10s{};
-	bool deleted_20s{};
-	bool deleted_30s{};
-	bool deleted_40s{};
-	bool deleted_50s{};
-	bool deleted_60s{};
-	bool deleted_70s{};
-	bool deleted_80s{};
-	// for checking how many numbers in that column
-	int control_1s  {};
-	int control_10s {};
-	int control_20s {};
-	int control_30s {};
-	int control_40s {};
-	int control_50s {};
-	int control_60s {};
-	int control_70s {};
-	int control_80s {};
-	bool twoOrMore{};
-	int startingNumber{};
-	int startingIndex{};
+	std::vector<controlNumbersInColumn> conVec{};
+	//MAKING CONTROL CLASS READY START
+	for (int i = 0; i < constants::columnCountCard; i++)
+	{
+		controlNumbersInColumn control;
+
+		control.isDeleted = false;
+		control.twoOrMore = false;
+
+		if (i == 0)
+			control.isFirstColumn = true;
+
+		if (control.isFirstColumn)
+		{
+			control.startingNumber = 1;
+			control.howManyWillDeleteFromDeck = 9;
+		}
+		else
+			control.startingNumber = i * 10;
+
+		if (i == constants::columnCountCard - 1)
+			control.isLastColumn = true;
+
+		if (control.isLastColumn)
+		{
+			control.valueWhenDividedTen.push_back(i);
+			control.valueWhenDividedTen.push_back(i + 1);
+
+			control.howManyWillDeleteFromDeck = 11;
+		}
+		else
+			control.valueWhenDividedTen.push_back(i);
+
+		if (!control.isFirstColumn && !control.isLastColumn)
+			control.howManyWillDeleteFromDeck = 10;
+
+		control.howManyNumberPickedInColumn = 0;
+
+		conVec.push_back(control);
+	}
 
 	bool randomNumberAvailable{};
-	int randomNumber{};
+	int randomIndex{};
 
-	for (int i = 0; i < constants::numberCountInCard; i++)
+	for (int i = 0; i < constants::numberCountInCard;i++)
 	{
-		twoOrMore = false;
-		control_1s = 0;
-		control_10s = 0;
-		control_20s = 0;
-		control_30s = 0;
-		control_40s = 0;
-		control_50s = 0;
-		control_60s = 0;
-		control_70s = 0;
-		control_80s = 0;
-
-		// every column in advancedCard can have max 2 numbers.
-		// example : in 3rd column [21,27] is possible, [21,27,29] is not possible.
-		// if we have [21,27] we need to delete values from 20 - 29 from from deckNumbers
-		for (int j = 0; j < constants::numberCountInCard; j++)
+		for (int j = 0; j < constants::numberCountInCard;j++)
 		{
-			//for values from 1 to 9
-			if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide1s)
+			for (int k = 0; k < conVec.size(); k++)
 			{
-
-				if (deleted_1s)
-					continue;
-
-				++control_1s;
-
-				if (control_1s >= 2)
-					twoOrMore = true;
-
-				if (twoOrMore == true)
+				if(basicCard[j] != 0 && std::find(conVec[k].valueWhenDividedTen.begin(), conVec[k].valueWhenDividedTen.end(), basicCard[j] / 10) != conVec[k].valueWhenDividedTen.end())
 				{
-					startingNumber = 1;
-					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
-
-				
-					// from 1 to 9 there are 9 numbers.
-					for (int k = 0; k < 9; k++)
+					
+					if (!conVec[k].isDeleted)
 					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
+						// if its size is 0, or contains the number.
+						if (std::find(conVec[k].valuesInColumn.begin(), conVec[k].valuesInColumn.end(), basicCard[j]) != conVec[k].valuesInColumn.end())
+							continue;
+						else
+							conVec[k].valuesInColumn.push_back(basicCard[j]);
+						
+						++conVec[k].howManyNumberPickedInColumn;
+
+						if (conVec[k].howManyNumberPickedInColumn >= 2)
+							conVec[k].twoOrMore = true;
+
+						if (conVec[k].twoOrMore)
+						{
+							conVec[k].startingIndex = getIndexValueFromVector(allNumbersInDeck, conVec[k].startingNumber);
+
+							
+							for (int l = 0; l < conVec[k].howManyWillDeleteFromDeck; l++)
+							{
+								allNumbersInDeck.erase(allNumbersInDeck.begin() + conVec[k].startingIndex);
+							}
+
+							conVec[k].isDeleted = true;
+							continue;
+						}
 					}
-
-					twoOrMore = false;
-					deleted_1s = true;
-					continue;
+					else
+						continue;
 				}
-
 			}
-			//for values from 10 to 19
-			else if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide10s)
-			{
-
-				if (deleted_10s)
-					continue;
-
-				++control_10s;
-
-				if (control_10s >= 2)
-					twoOrMore = true;
-
-				if (twoOrMore == true)
-				{
-					startingNumber = 10;
-					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
-
-					// from 10 to 19 there are 10 numbers.
-					for (int k = 0; k < 10; k++)
-					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
-					}
-
-					twoOrMore = false;
-					deleted_10s = true;
-					continue;
-				}
-
-			}
-			else if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide20s)
-			{
-
-				if (deleted_20s)
-					continue;
-
-				++control_20s;
-
-				if (control_20s >= 2)
-					twoOrMore = true;
-
-				if (twoOrMore == true)
-				{
-					startingNumber = 20;
-					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber) ;
-
-					// from 20 to 29 there are 10 numbers.
-					for (int k = 0; k < 10; k++)
-					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
-					}
-
-					twoOrMore = false;
-					deleted_20s = true;
-					continue;
-				}
-
-			}
-			else if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide30s)
-			{
-				if (deleted_30s)
-					continue;
-
-				++control_30s;
-
-				if (control_30s >= 2)
-					twoOrMore = true;
-
-				if (twoOrMore == true)
-				{
-					startingNumber = 30;
-					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
-
-					// from 30 to 39 there are 10 numbers.
-					for (int k = 0; k < 10; k++)
-					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
-					}
-
-					twoOrMore = false;
-					deleted_30s = true;
-					continue;
-				}
-
-			}
-			else if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide40s)
-			{
-
-				if (deleted_40s)
-					continue;
-
-				++control_40s;
-
-				if (control_40s >= 2)
-					twoOrMore = true;
-
-				if (twoOrMore == true)
-				{
-					startingNumber = 40;
-					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
-
-					// from 40 to 49 there are 10 numbers.
-					for (int k = 0; k < 10; k++)
-					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
-					}
-
-					twoOrMore = false;
-					deleted_40s = true;
-					continue;
-				}
-
-			}
-			else if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide50s)
-			{
-
-				if (deleted_50s)
-					continue;
-
-				++control_50s;
-
-				if (control_50s >= 2)
-					twoOrMore = true;
-
-				if (twoOrMore == true)
-				{
-					startingNumber = 50;
-					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
-
-					// from 50 to 59 there are 10 numbers.
-					for (int k = 0; k < 10; k++)
-					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
-					}
-
-					twoOrMore = false;
-					deleted_50s = true;
-					continue;
-				}
-
-			}
-			else if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide60s)
-			{
-				if (deleted_60s)
-					continue;
-
-				++control_60s;
-
-				if (control_60s >= 2)
-					twoOrMore = true;
-
-				if (twoOrMore == true)
-				{
-					startingNumber = 60;
-					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
-
-					// from 60 to 69 there are 10 numbers.
-					for (int k = 0; k < 10; k++)
-					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
-					}
-
-					twoOrMore = false;
-					deleted_60s = true;
-					continue;
-				}
-
-			}
-			else if (basicCard[j] != 0 && basicCard[j] / 10 == constants::divide70s)
-			{
-
-				if (deleted_70s)
-					continue;
-
-				++control_70s;
-
-				if (control_70s >= 2)
-					twoOrMore = true;
-
-				if (twoOrMore == true)
-				{
-					startingNumber = 70;
-					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
-
-					// from 70 to 79 there are 10 numbers.
-					for (int k = 0; k < 10; k++)
-					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
-					}
-
-					twoOrMore = false;
-					deleted_70s = true;
-					continue;
-				}
-
-			}
-			else if (basicCard[j] != 0 && (basicCard[j] / 10 == constants::divide80s || basicCard[j] / 10 == constants::divide90s))
-			{
-				if (deleted_80s)
-					continue;
-
-				++control_80s;
-
-				if (control_80s >= 2)
-					twoOrMore = true;
-
-				if (twoOrMore == true)
-				{
-					startingNumber = 80 ;
-					startingIndex = getIndexValueFromVector(allNumbersInDeck,startingNumber);
-
-					// from 80 to 90 there are 11 numbers.
-					for (int k = 0; k < 11; k++)
-					{
-						allNumbersInDeck.erase(allNumbersInDeck.begin() + startingIndex);
-					}
-
-					twoOrMore = false;
-					deleted_80s = true;
-					continue;
-				}
-
-			}
+			
 		}
-
-
+		
 		// this part sets card numbers one by one.
 		randomNumberAvailable = false;
 
 		while (!randomNumberAvailable)
 		{
 			randomNumberAvailable = true;
-			randomNumber = rand() % allNumbersInDeck.size();
+			randomIndex = rand() % allNumbersInDeck.size();
 
 			for (int k = 0; k < constants::numberCountInCard; k++)
 			{
-				if (basicCard[k] != 0 && basicCard[k] == allNumbersInDeck[randomNumber])
+				// controlling if any other card get that same value before.
+				if (basicCard[k] != 0 && basicCard[k] == allNumbersInDeck[randomIndex])
 					randomNumberAvailable = false;
 			}
 
 			if (randomNumberAvailable)
-				basicCard[i] = allNumbersInDeck[randomNumber];
+				basicCard[i] = allNumbersInDeck[randomIndex];
+
 		}
 	}
+
 	return basicCard;
 }
 
@@ -738,6 +547,7 @@ void printWinners(const winnerType& winners)
 }
 
 int main() {
+
 
 	srand(time(0)); // seed for rand() function.
 
